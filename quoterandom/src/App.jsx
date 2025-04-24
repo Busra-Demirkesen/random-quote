@@ -36,7 +36,7 @@ function App() {
 
       <div className="btn-container">
         <button onClick={handleLikeClick}>❤️</button>
-        <button onClick={handleNextQuoteClick}>🔀 Next Quote</button>
+        <button onClick={handleNextQuoteClick}>Next Quote</button>
       </div>
     </div>
   );
