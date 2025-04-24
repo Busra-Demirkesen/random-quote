@@ -3,20 +3,23 @@
     padding: 20px;
     margin: 20px 0;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    background-color: #a89882;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .quote-text{
     font-size: 18px;
     font-style: italic;
     margin-bottom: 10px;
+    color: #fff;
 }
 
 .quote-author{
     font-weight: bold;
     margin-bottom: 10px;
+    color:#fff;
 }
 
 .quote-likes{
     font-size: 16px;
-    color:#555;
+    color:#fff;
 }
