@@ -1,6 +1,7 @@
 import { quotes as initialQuotes } from './quotes';
 import './App.css';
-import QuoteCard from './components/QuoteCard'; // import düzeltildi
+import QuoteCard from './components/QuoteCard/QuoteCard';
+
 import { useState } from 'react';
 
 function App() {
@@ -12,15 +13,21 @@ function App() {
     setCurrentIndex(randomIndex);
   }
 
-  const handleLikeClick = () =>{
-    const updatedQuotes = quotes.map((quote,index) =>{
-      if(index === currentIndex){
-        return {...quote, likeCount:quote.likeCount + 1};
+  const handleLikeClick = () => {
+  
+
+    const updatedQuotes = quotes.map((quote, index) => {
+      if (index === currentIndex) {
+        return { ...quote, likeCount: quote.likeCount + 1 };
       }
       return quote;
     });
     setQuotes(updatedQuotes);
-  }
+
+   
+
+  };
+  
 
   return (
     <div className="App">
