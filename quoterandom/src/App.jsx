@@ -1,14 +1,13 @@
-import { quotes as initialQuotes } from "./quotes";
+
 import "./App.css";
 import QuoteCard from "./components/QuoteCard/QuoteCard";
-import { useState, useEffect } from "react";
-import { useContext } from "react";
+import { createContext, useState, useEffect } from "react";
 import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
 
 function App() {
-  // QuotesContext'ten veri alıyoruz
+ 
   const { quotes, currentIndex, history } = useContext(QuotesContext);
-  // QuotesDispatchContext'ten güncelleyici fonksiyonları alıyoruz
+ 
   const { setQuotes, setCurrentIndex, setHistory } = useContext(QuotesDispatchContext);
 
   const handleNextQuoteClick = () => {
