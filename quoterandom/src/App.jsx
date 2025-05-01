@@ -1,7 +1,7 @@
 
 import "./App.css";
 import QuoteCard from "./components/QuoteCard/QuoteCard";
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
 
   return (
     <div className="App">
-      <QuoteCard quoteObj={quotes[currentIndex]} />
+      <QuoteCard />
 
       <div className="btn-container">
         <button onClick={handleLikeClick}>
