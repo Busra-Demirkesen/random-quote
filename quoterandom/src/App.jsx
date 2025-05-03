@@ -4,6 +4,7 @@ import QuoteCard from "./components/QuoteCard/QuoteCard";
 import { useState, useEffect } from "react";
 
 function App() {
+  
   const [quotes, setQuotes] = useState(() => {
     const saved = localStorage.getItem("quotes");
     return saved ? JSON.parse(saved) : initialQuotes;
