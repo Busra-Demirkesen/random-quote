@@ -36,7 +36,8 @@ function App() {
 
   return (
     <div className="App">
-      <QuoteCard />
+
+      <QuoteCard /> 
 
       <div className="btn-container">
         <button onClick={handleLikeClick}>
