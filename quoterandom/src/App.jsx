@@ -4,15 +4,12 @@ import QuoteCard from "./components/QuoteCard/QuoteCard";
 import { useState, useEffect } from "react";
 
 function App() {
-
-  
   const [quotes, setQuotes] = useState(() => {
     const saved = localStorage.getItem("quotes");
     return saved ? JSON.parse(saved) : initialQuotes;
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
 
   const handleNextQuoteClick = () => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -40,17 +37,9 @@ function App() {
     setQuotes(updatedQuotes);
   };
 
-
-
   useEffect(() => {
     localStorage.setItem("quotes", JSON.stringify(quotes));
   }, [quotes]);
-
-
-
-
-
-
 
   return (
     <div className="App">
