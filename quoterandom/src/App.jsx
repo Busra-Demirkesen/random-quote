@@ -1,28 +1,18 @@
-import { quotes as initialQuotes } from './quotes';
-import './App.css';
-import QuoteCard from './components/QuoteCard/QuoteCard';
-import { useState, useEffect } from 'react';
+
+import "./App.css";
+import QuoteCard from "./components/QuoteCard/QuoteCard";
+import { createContext, useState, useEffect, useContext } from "react";
+import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
 
 function App() {
-
-  
-  const [quotes, setQuotes] = useState(() => {
-    const saved = localStorage.getItem('quotes');
-    return saved ? JSON.parse(saved) : initialQuotes;
-  });
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    localStorage.setItem('quotes', JSON.stringify(quotes));
-  }, [quotes]);
-
-
-  const [history,setHistory] = useState([]);
+ 
+  const { quotes, currentIndex, history } = useContext(QuotesContext);
+ 
+  const { setQuotes, setCurrentIndex, setHistory } = useContext(QuotesDispatchContext);
 
   const handleNextQuoteClick = () => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
-    setHistory(prev => [...prev, currentIndex]);
+    setHistory((prev) => [...prev, currentIndex]);
     setCurrentIndex(randomIndex);
   };
 
@@ -30,9 +20,9 @@ function App() {
     if (history.length === 0) return;
 
     const previousIndex = history[history.length - 1];
-  setCurrentIndex(previousIndex);
-  setHistory(prev => prev.slice(0, prev.length - 1));
-  }
+    setCurrentIndex(previousIndex);
+    setHistory((prev) => prev.slice(0, prev.length - 1));
+  };
 
   const handleLikeClick = () => {
     const updatedQuotes = quotes.map((quote, index) => {
@@ -46,16 +36,20 @@ function App() {
 
   return (
     <div className="App">
-      <QuoteCard quoteObj={quotes[currentIndex]} />
+
+      <QuoteCard /> 
 
       <div className="btn-container">
-      <button onClick={handleLikeClick}>
-  <i className="fa-solid fa-thumbs-up"></i>
-</button>
+        <button onClick={handleLikeClick}>
+          <i className="fa-solid fa-thumbs-up"></i>
+        </button>
 
-        <button onClick={handlePreviousQuoteClick}><i class="fa-solid fa-left-long"></i></button>
-        <button onClick={handleNextQuoteClick}><i class="fa-solid fa-right-long"></i></button>
-       
+        <button onClick={handlePreviousQuoteClick}>
+          <i className="fa-solid fa-left-long"></i>
+        </button>
+        <button onClick={handleNextQuoteClick}>
+          <i className="fa-solid fa-right-long"></i>
+        </button>
       </div>
     </div>
   );
