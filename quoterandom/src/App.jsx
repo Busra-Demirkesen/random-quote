@@ -1,9 +1,9 @@
 
-import "./App.css";
+
 import QuoteCard from "./components/QuoteCard/QuoteCard";
 import { createContext, useState, useEffect, useContext } from "react";
 import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
-
+import IconButton from "./components/IconButton";
 function App() {
  
   const { quotes, currentIndex, history } = useContext(QuotesContext);
@@ -35,22 +35,16 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="App bg-[#f0e6d2] flex flex-col items-center justify-center h-screen">
 
       <QuoteCard /> 
 
-      <div className="btn-container">
-        <button onClick={handleLikeClick}>
-          <i className="fa-solid fa-thumbs-up"></i>
-        </button>
+      <div className="flex gap-4 justify-center mt-6">
+  <IconButton onClick={handleLikeClick} iconClass="fa-solid fa-thumbs-up" />
+  <IconButton onClick={handlePreviousQuoteClick} iconClass="fa-solid fa-left-long" />
+  <IconButton onClick={handleNextQuoteClick} iconClass="fa-solid fa-right-long" />
+</div>
 
-        <button onClick={handlePreviousQuoteClick}>
-          <i className="fa-solid fa-left-long"></i>
-        </button>
-        <button onClick={handleNextQuoteClick}>
-          <i className="fa-solid fa-right-long"></i>
-        </button>
-      </div>
     </div>
   );
 }
