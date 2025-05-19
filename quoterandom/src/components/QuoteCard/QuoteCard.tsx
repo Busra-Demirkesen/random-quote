@@ -1,11 +1,18 @@
 
 import { useContext } from 'react';
 import { QuotesContext } from "../../context/QuotesContext";
+import { Quote } from "../../types/quote";
+
+
 
 function QuoteCard() {
 
-  const {quotes,currentIndex} = useContext(QuotesContext);
-  const quoteObj = quotes[currentIndex];
+  const context = useContext(QuotesContext);
+  if(!context){
+    return <div>Loading...</div>
+  }
+  const {quotes,currentIndex} = context
+  const quoteObj: Quote = quotes[currentIndex];
 
   return (
     <div className="border border-gray-300 p-5 rounded-lg bg-[#a89882] shadow-lg text-center">

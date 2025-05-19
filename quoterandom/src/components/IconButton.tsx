@@ -1,4 +1,12 @@
-function IconButton({ onClick, iconClass }) {
+import React from "react";
+
+type IconButtonProps = {
+  onClick: () =>void;
+  iconClass: string;
+}
+
+
+function IconButton({ onClick, iconClass }: IconButtonProps) {
     return (
       <button
         onClick={onClick}
