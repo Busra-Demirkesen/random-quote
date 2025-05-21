@@ -1,12 +1,13 @@
 import QuoteCard from "./components/QuoteCard/QuoteCard";
-import { createContext, useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
 import IconButton from "./components/IconButton";
+
 function App() {
   const { quotes, currentIndex, history } = useContext(QuotesContext);
 
   const { setQuotes, setCurrentIndex, setHistory } = useContext(
-    QuotesDispatchContext,
+    QuotesDispatchContext
   );
 
   const handleNextQuoteClick = () => {
@@ -34,7 +35,7 @@ function App() {
   };
 
   return (
-    <div className="App bg-[#f0e6d2] flex flex-col items-center justify-center h-screen">
+    <div className=" bg-[#f0e6d2] flex flex-col items-center justify-center h-screen">
       <QuoteCard />
 
       <div className="flex gap-4 justify-center mt-6">
