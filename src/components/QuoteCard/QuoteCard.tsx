@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { QuotesContext } from "../../context/QuotesContext";
-import type { Quote } from "../../context/QuotesContext"; // İsteğe bağlı: Tip için
+import type { Quote } from "../../context/QuotesContext"; 
 
 function QuoteCard() {
   const context = useContext(QuotesContext);
 
-  // undefined olma ihtimaline karşı koruma
+
   if (!context) {
     return <div>Yükleniyor...</div>;
   }
@@ -13,7 +13,6 @@ function QuoteCard() {
   const { quotes, currentIndex } = context;
   const quoteObj: Quote | undefined = quotes[currentIndex];
 
-  // Geçersiz index veya boş quote
   if (!quoteObj) return null;
 
   return (
