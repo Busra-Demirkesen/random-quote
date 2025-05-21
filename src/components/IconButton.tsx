@@ -1,4 +1,11 @@
-function IconButton({ onClick, iconClass }) {
+import React from "react";
+
+interface IconButtonProps {
+  onClick: () => void;
+  iconClass: string;
+}
+
+const IconButton: React.FC<IconButtonProps> = ({ onClick, iconClass }) => {
   return (
     <button
       onClick={onClick}
@@ -7,6 +14,7 @@ function IconButton({ onClick, iconClass }) {
       <i className={iconClass}></i>
     </button>
   );
-}
+};
 
 export default IconButton;
+

@@ -1,14 +1,21 @@
 import QuoteCard from "./components/QuoteCard/QuoteCard";
 import { useContext } from "react";
-import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
+import {
+  QuotesContext,
+  QuotesDispatchContext,
+} from "./context/QuotesContext";
 import IconButton from "./components/IconButton";
 
 function App() {
-  const { quotes, currentIndex, history } = useContext(QuotesContext);
+  const quotesContext = useContext(QuotesContext);
+  const quotesDispatchContext = useContext(QuotesDispatchContext);
 
-  const { setQuotes, setCurrentIndex, setHistory } = useContext(
-    QuotesDispatchContext
-  );
+  if (!quotesContext || !quotesDispatchContext) {
+    return <div>Context not available</div>;
+  }
+
+  const { quotes, currentIndex, history } = quotesContext;
+  const { setQuotes, setCurrentIndex, setHistory } = quotesDispatchContext;
 
   const handleNextQuoteClick = () => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -18,7 +25,6 @@ function App() {
 
   const handlePreviousQuoteClick = () => {
     if (history.length === 0) return;
-
     const previousIndex = history[history.length - 1];
     setCurrentIndex(previousIndex);
     setHistory((prev) => prev.slice(0, prev.length - 1));
@@ -27,7 +33,10 @@ function App() {
   const handleLikeClick = () => {
     const updatedQuotes = quotes.map((quote, index) => {
       if (index === currentIndex) {
-        return { ...quote, likeCount: quote.likeCount + 1 };
+        return {
+          ...quote,
+          likeCount: (quote.likeCount ?? 0) + 1,
+        };
       }
       return quote;
     });
@@ -35,7 +44,7 @@ function App() {
   };
 
   return (
-    <div className=" bg-[#f0e6d2] flex flex-col items-center justify-center h-screen">
+    <div className="bg-[#f0e6d2] flex flex-col items-center justify-center h-screen">
       <QuoteCard />
 
       <div className="flex gap-4 justify-center mt-6">
