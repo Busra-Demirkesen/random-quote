@@ -5,7 +5,7 @@ import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
 import { Quote } from "./types/quote";
 
 function App() {
-  // Context'ten verileri al
+
   const quotesContext = useContext(QuotesContext);
   if (!quotesContext) {
     throw new Error("QuotesContext is undefined. Make sure your component is wrapped in QuotesProvider.");
@@ -18,14 +18,14 @@ function App() {
   }
   const { setQuotes, setCurrentIndex, setHistory } = quotesDispatchContext;
 
-  // Sonraki alıntıya geç
+
   const handleNextQuoteClick = () => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     setHistory((prev: number[]) => [...prev, currentIndex]);
     setCurrentIndex(randomIndex);
   };
 
-  // Önceki alıntıya dön
+
   const handlePreviousQuoteClick = () => {
     if (history.length === 0) return;
 
