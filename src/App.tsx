@@ -7,48 +7,38 @@ import {
 } from "./context/QuotesContext";
 
 const App: React.FC = () => {
-  const quotesContext = useContext(QuotesContext);
-  const quotesDispatchContext = useContext(QuotesDispatchContext);
+  const state = useContext(QuotesContext);
+  const dispatch = useContext(QuotesDispatchContext);
 
-  if (!quotesContext || !quotesDispatchContext) {
-    return <div>Context not available</div>;
-  }
+  if (!state || !dispatch) return <div>Context not available</div>;
 
-  const { quotes, currentIndex, history } = quotesContext;
-  const { setQuotes, setCurrentIndex, setHistory } = quotesDispatchContext;
+  const { quotes, currentIndex } = state;
 
   const handleNextQuoteClick = () => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
-    setHistory((prev) => [...prev, currentIndex]);
-    setCurrentIndex(randomIndex);
+    dispatch({ type: "ADD_TO_HISTORY", payload: currentIndex });
+    dispatch({ type: "SET_CURRENT_INDEX", payload: randomIndex });
   };
 
   const handlePreviousQuoteClick = () => {
-    if (history.length === 0) return;
-    const previousIndex = history[history.length - 1];
-    setCurrentIndex(previousIndex);
-    setHistory((prev) => prev.slice(0, prev.length - 1));
+    dispatch({ type: "UNDO_HISTORY" });
   };
 
   const handleLikeClick = () => {
-    const updatedQuotes = quotes.map((quote, index) => {
-      if (index === currentIndex) {
-        return {
-          ...quote,
-          likeCount: (quote.likeCount ?? 0) + 1,
-        };
-      }
-      return quote;
-    });
+    dispatch({ type: "LIKE_CURRENT" });
+  };
 
-    setQuotes(updatedQuotes);
+  const handleDislikeClick = () => {
+    dispatch({ type: "DISLIKE_CURRENT" });
   };
 
   return (
     <div className="bg-[#f0e6d2] flex flex-col items-center justify-center h-screen">
       <QuoteCard />
+
       <div className="flex gap-4 justify-center mt-6">
         <IconButton onClick={handleLikeClick} iconClass="fa-solid fa-thumbs-up" />
+        <IconButton onClick={handleDislikeClick} iconClass="fa-solid fa-thumbs-down" />
         <IconButton onClick={handlePreviousQuoteClick} iconClass="fa-solid fa-left-long" />
         <IconButton onClick={handleNextQuoteClick} iconClass="fa-solid fa-right-long" />
       </div>
