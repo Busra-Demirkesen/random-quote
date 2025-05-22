@@ -10,7 +10,8 @@ if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-const root = ReactDOM.createRoot(rootElement);
+const root = ReactDOM.createRoot(rootElement as HTMLElement);
+
 root.render(
   <React.StrictMode>
     <QuotesProvider>

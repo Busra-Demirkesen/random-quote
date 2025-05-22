@@ -1,5 +1,3 @@
-import React from "react";
-
 interface IconButtonProps {
   onClick: () => void;
   iconClass: string;
@@ -17,4 +15,3 @@ const IconButton: React.FC<IconButtonProps> = ({ onClick, iconClass }) => {
 };
 
 export default IconButton;
-

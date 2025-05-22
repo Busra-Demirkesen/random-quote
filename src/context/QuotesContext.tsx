@@ -7,13 +7,8 @@ import React, {
   SetStateAction,
 } from "react";
 import { quotes as initialQuotes } from "../quotes";
+import { Quote } from "../types/Quote"; 
 
-
-export type Quote = {
-  quote: string;
-  author: string;
-  likeCount: number;
-};
 
 type QuotesContextType = {
   quotes: Quote[];
@@ -21,20 +16,24 @@ type QuotesContextType = {
   history: number[];
 };
 
+
 type QuotesDispatchContextType = {
   setQuotes: Dispatch<SetStateAction<Quote[]>>;
   setCurrentIndex: Dispatch<SetStateAction<number>>;
   setHistory: Dispatch<SetStateAction<number[]>>;
 };
 
+
 export const QuotesContext = createContext<QuotesContextType | undefined>(undefined);
 export const QuotesDispatchContext = createContext<QuotesDispatchContextType | undefined>(undefined);
+
 
 type QuotesProviderProps = {
   children: ReactNode;
 };
 
-export const QuotesProvider = ({ children }: QuotesProviderProps) => {
+
+export const QuotesProvider: React.FC<QuotesProviderProps> = ({ children }) => {
   const [quotes, setQuotes] = useState<Quote[]>(() => {
     const saved = localStorage.getItem("quotes");
     return saved ? (JSON.parse(saved) as Quote[]) : initialQuotes;
@@ -49,9 +48,7 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
 
   return (
     <QuotesContext.Provider value={{ quotes, currentIndex, history }}>
-      <QuotesDispatchContext.Provider
-        value={{ setQuotes, setCurrentIndex, setHistory }}
-      >
+      <QuotesDispatchContext.Provider value={{ setQuotes, setCurrentIndex, setHistory }}>
         {children}
       </QuotesDispatchContext.Provider>
     </QuotesContext.Provider>
