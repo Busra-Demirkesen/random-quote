@@ -17,5 +17,5 @@ root.render(
     <QuotesProvider>
       <App />
     </QuotesProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

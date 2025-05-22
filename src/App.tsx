@@ -1,10 +1,7 @@
 import { useContext } from "react";
 import QuoteCard from "./components/QuoteCard/QuoteCard";
 import IconButton from "./components/IconButton";
-import {
-  QuotesContext,
-  QuotesDispatchContext,
-} from "./context/QuotesContext";
+import { QuotesContext, QuotesDispatchContext } from "./context/QuotesContext";
 
 const App: React.FC = () => {
   const state = useContext(QuotesContext);
@@ -37,10 +34,22 @@ const App: React.FC = () => {
       <QuoteCard />
 
       <div className="flex gap-4 justify-center mt-6">
-        <IconButton onClick={handleLikeClick} iconClass="fa-solid fa-thumbs-up" />
-        <IconButton onClick={handleDislikeClick} iconClass="fa-solid fa-thumbs-down" />
-        <IconButton onClick={handlePreviousQuoteClick} iconClass="fa-solid fa-left-long" />
-        <IconButton onClick={handleNextQuoteClick} iconClass="fa-solid fa-right-long" />
+        <IconButton
+          onClick={handleLikeClick}
+          iconClass="fa-solid fa-thumbs-up"
+        />
+        <IconButton
+          onClick={handleDislikeClick}
+          iconClass="fa-solid fa-thumbs-down"
+        />
+        <IconButton
+          onClick={handlePreviousQuoteClick}
+          iconClass="fa-solid fa-left-long"
+        />
+        <IconButton
+          onClick={handleNextQuoteClick}
+          iconClass="fa-solid fa-right-long"
+        />
       </div>
     </div>
   );

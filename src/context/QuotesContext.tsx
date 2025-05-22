@@ -14,7 +14,6 @@ type QuotesState = {
   history: number[];
 };
 
-
 type QuotesAction =
   | { type: "SET_QUOTES"; payload: Quote[] }
   | { type: "SET_CURRENT_INDEX"; payload: number }
@@ -23,7 +22,10 @@ type QuotesAction =
   | { type: "LIKE_CURRENT" }
   | { type: "DISLIKE_CURRENT" };
 
-const quotesReducer = (state: QuotesState, action: QuotesAction): QuotesState => {
+const quotesReducer = (
+  state: QuotesState,
+  action: QuotesAction,
+): QuotesState => {
   switch (action.type) {
     case "SET_QUOTES":
       return { ...state, quotes: action.payload };
@@ -47,7 +49,7 @@ const quotesReducer = (state: QuotesState, action: QuotesAction): QuotesState =>
       const likedQuotes = state.quotes.map((q, i) =>
         i === state.currentIndex
           ? { ...q, likeCount: (q.likeCount ?? 0) + 1 }
-          : q
+          : q,
       );
       return { ...state, quotes: likedQuotes };
 
@@ -55,7 +57,7 @@ const quotesReducer = (state: QuotesState, action: QuotesAction): QuotesState =>
       const dislikedQuotes = state.quotes.map((q, i) =>
         i === state.currentIndex
           ? { ...q, likeCount: Math.max(0, (q.likeCount ?? 0) - 1) }
-          : q
+          : q,
       );
       return { ...state, quotes: dislikedQuotes };
 
@@ -64,17 +66,16 @@ const quotesReducer = (state: QuotesState, action: QuotesAction): QuotesState =>
   }
 };
 
-
 const initialState: QuotesState = {
   quotes: initialQuotes,
   currentIndex: 0,
   history: [],
 };
 
-
 export const QuotesContext = createContext<QuotesState | undefined>(undefined);
-export const QuotesDispatchContext = createContext<Dispatch<QuotesAction> | undefined>(undefined);
-
+export const QuotesDispatchContext = createContext<
+  Dispatch<QuotesAction> | undefined
+>(undefined);
 
 type QuotesProviderProps = {
   children: ReactNode;
