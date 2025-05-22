@@ -1,5 +1,5 @@
 
-import { Quote } from './types/Quote'
+import { Quote } from './types/Quote';
 
 
 export const quotes:Quote[] = [
