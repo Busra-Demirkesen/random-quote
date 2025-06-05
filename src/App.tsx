@@ -88,7 +88,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (user && (window.location.pathname === "/login" || window.location.pathname === "/register")) {
       navigate("/");
-    } else if (!user && window.location.pathname === "/") {
+    } else if (!user && window.location.pathname !== "/login" && window.location.pathname !== "/register") {
       navigate("/login");
     }
   }, [user, navigate]);
