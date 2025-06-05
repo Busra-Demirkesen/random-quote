@@ -30,9 +30,13 @@ const QuoteCard: React.FC = () => {
       <p className="font-bold mb-2 text-white">- {quoteObj.a}</p>
       <button
         onClick={handleLikeToggle}
-        className={`mt-4 px-4 py-2 rounded-md ${isCurrentQuoteLiked ? 'bg-red-500 hover:bg-red-600' : 'bg-white text-[#a89882] hover:bg-gray-200'} text-white font-bold`}
+        className={`p-2 rounded-full ${isCurrentQuoteLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-600 focus:outline-none`}
       >
-        {isCurrentQuoteLiked ? 'Unlike' : 'Like'}
+        {isCurrentQuoteLiked ? (
+          <i className="fa-solid fa-heart fa-2x"></i>
+        ) : (
+          <i className="fa-regular fa-heart fa-2x"></i>
+        )}
       </button>
     </div>
   );
