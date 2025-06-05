@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { QuotesContext } from "../../context/QuotesContext";
-import type { Quote } from "../../types/Quote"; // Tipi context içinden değil, `types` klasöründen almak daha doğrudur
+import type { Quote } from "../../types/Quote";
 
 const QuoteCard: React.FC = () => {
   const context = useContext(QuotesContext);

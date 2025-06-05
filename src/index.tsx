@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { QuotesProvider } from "./context/QuotesContext";
+import { AuthProvider } from "./context/AuthContext";
+import { BrowserRouter } from "react-router-dom";
 
 const rootElement = document.getElementById("root");
 
@@ -14,8 +16,12 @@ const root = ReactDOM.createRoot(rootElement as HTMLElement);
 
 root.render(
   <React.StrictMode>
-    <QuotesProvider>
-      <App />
-    </QuotesProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <QuotesProvider>
+          <App />
+        </QuotesProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );
