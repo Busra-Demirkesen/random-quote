@@ -1,5 +1,7 @@
 export interface Quote {
-  quote: string;
-  author: string;
-  likeCount: number;
+  _id: string;
+  q: string;
+  a: string;
+  h: string;
+  liked?: boolean;
 }
