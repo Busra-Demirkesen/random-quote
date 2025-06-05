@@ -1,26 +1,28 @@
 import React, { useState } from "react";
 import { useAuthDispatch } from "../../context/AuthContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const Login: React.FC = () => {
   const dispatch = useAuthDispatch();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     dispatch({ type: "SET_LOADING", payload: true });
     dispatch({ type: "SET_ERROR", payload: null });
 
-    // Simulate API call
-    setTimeout(() => {
-      if (email === "test@example.com" && password === "password") {
-        dispatch({ type: "LOGIN", payload: { id: "1", email: "test@example.com" } });
-        alert("Login successful!"); // User feedback
-      } else {
-        dispatch({ type: "SET_ERROR", payload: "Invalid credentials" });
-      }
-    }, 1000);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      dispatch({ type: "LOGIN", payload: { id: user.uid, email: user.email, uid: user.uid } });
+      alert("Login successful!"); // User feedback
+    } catch (error: any) {
+      dispatch({ type: "SET_ERROR", payload: error.message });
+      console.error("Login error:", error.message);
+    }
   };
 
   return (

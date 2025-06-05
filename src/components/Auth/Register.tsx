@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useAuthDispatch } from "../../context/AuthContext";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -7,7 +9,7 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const dispatch = useAuthDispatch();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -18,13 +20,15 @@ const Register: React.FC = () => {
     dispatch({ type: "SET_LOADING", payload: true });
     dispatch({ type: "SET_ERROR", payload: null });
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, you would send this to a backend
-      const newUser = { id: Date.now().toString(), email };
-      dispatch({ type: "REGISTER", payload: newUser });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      dispatch({ type: "LOGIN", payload: { id: user.uid, email: user.email, uid: user.uid } });
       alert("Registration successful!"); // User feedback
-    }, 1000);
+    } catch (error: any) {
+      dispatch({ type: "SET_ERROR", payload: error.message });
+      console.error("Registration error:", error.message);
+    }
   };
 
   return (

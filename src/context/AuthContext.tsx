@@ -1,12 +1,20 @@
 import { createContext, useReducer, useEffect, ReactNode, Dispatch, useContext } from "react";
+import { auth } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  User as FirebaseUser,
+} from "firebase/auth";
 
 // Adding a comment to force TypeScript re-evaluation
 
 // 1. Define AuthState type
 interface User {
   id: string;
-  email: string;
-  // Add other user properties as needed
+  email: string | null;
+  uid: string;
 }
 
 interface AuthState {
@@ -19,7 +27,6 @@ interface AuthState {
 type AuthAction =
   | { type: "LOGIN"; payload: User }
   | { type: "LOGOUT" }
-  | { type: "REGISTER"; payload: User }
   | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_ERROR"; payload: string | null };
 
@@ -27,7 +34,6 @@ type AuthAction =
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "LOGIN":
-    case "REGISTER":
       return { ...state, user: action.payload, isLoading: false, error: null };
     case "LOGOUT":
       return { ...state, user: null, isLoading: false, error: null };
@@ -43,7 +49,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 // 4. Define initial state
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoading: true, // Set to true initially to indicate auth state is being loaded
   error: null,
 };
 
@@ -60,28 +66,32 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Load user from localStorage on initial render
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const user: User = JSON.parse(storedUser);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const user: User = {
+          id: firebaseUser.uid, // Use uid as id
+          email: firebaseUser.email, // Use email from FirebaseUser
+          uid: firebaseUser.uid,
+        };
         dispatch({ type: "LOGIN", payload: user });
-      } catch (e) {
-        console.error("Failed to parse user from localStorage", e);
-        localStorage.removeItem("user");
+      } else {
+        dispatch({ type: "LOGOUT" });
       }
-    }
+    });
+
+    // Clean up subscription
+    return () => unsubscribe();
   }, []);
 
-  // Persist user to localStorage whenever it changes
-  useEffect(() => {
-    if (state.user) {
-      localStorage.setItem("user", JSON.stringify(state.user));
-    } else {
-      localStorage.removeItem("user");
-    }
-  }, [state.user]);
+  // No longer need localStorage persistence for user here, as Firebase manages session
+  // useEffect(() => {
+  //   if (state.user) {
+  //     localStorage.setItem("user", JSON.stringify(state.user));
+  //   } else {
+  //     localStorage.removeItem("user");
+  //   }
+  // }, [state.user]);
 
   return (
     <AuthContext.Provider value={state}>
