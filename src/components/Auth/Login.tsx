@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuthDispatch } from "../../context/AuthContext";
+import { useAuthDispatch, AuthActionType } from "../../context/AuthContext";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 
@@ -7,20 +7,22 @@ const Login: React.FC = () => {
   const dispatch = useAuthDispatch();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    dispatch({ type: "SET_LOADING", payload: true });
-    dispatch({ type: "SET_ERROR", payload: null });
+    dispatch({ type: AuthActionType.SET_LOADING, payload: true });
+    dispatch({ type: AuthActionType.SET_ERROR, payload: null });
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      dispatch({ type: "LOGIN", payload: { id: user.uid, email: user.email, uid: user.uid } });
-      alert("Login successful!"); // User feedback
+      dispatch({ type: AuthActionType.LOGIN, payload: { id: user.uid, email: user.email, uid: user.uid } });
+      setSuccessMessage("Login successful!"); // Show success message on screen
+      setTimeout(() => setSuccessMessage(null), 3000); // Clear message after 3 seconds
     } catch (error: any) {
-      dispatch({ type: "SET_ERROR", payload: error.message });
+      dispatch({ type: AuthActionType.SET_ERROR, payload: error.message });
       console.error("Login error:", error.message);
     }
   };
@@ -32,6 +34,11 @@ const Login: React.FC = () => {
         className="bg-white p-8 rounded-lg shadow-md w-96"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-[#948571]">Login</h2>
+        {successMessage && (
+          <div className="bg-green-500 text-white p-2 mb-4 rounded text-center">
+            {successMessage}
+          </div>
+        )}
         <div className="mb-4">
           <label
             htmlFor="email"

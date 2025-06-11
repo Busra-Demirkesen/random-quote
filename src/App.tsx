@@ -1,19 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import QuoteCard from "./components/QuoteCard/QuoteCard";
 import IconButton from "./components/IconButton";
-import { QuotesContext, QuotesDispatchContext, QuotesProvider } from "./context/QuotesContext";
-import { useAuth, useAuthDispatch } from "./context/AuthContext";
+import { QuotesProvider, useQuotesState, useQuotesDispatch, QuotesActionType } from "./context/QuotesContext";
+import { useAuth, useAuthDispatch, AuthActionType } from "./context/AuthContext";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import Logout from "./components/Auth/Logout";
 import Profile from "./components/Profile";
 
 const AppContent: React.FC = () => {
-  const state = React.useContext(QuotesContext);
-  const dispatch = React.useContext(QuotesDispatchContext);
-
-  if (!state || !dispatch) return <div>Context not available</div>;
+  const state = useQuotesState();
+  const dispatch = useQuotesDispatch();
 
   const { quotes, currentIndex, isLoading, error } = state;
 
@@ -36,8 +34,8 @@ const AppContent: React.FC = () => {
       console.log('Current quote before adding to history:', currentQuote);
       if (currentQuote) {
         const randomIndex = Math.floor(Math.random() * quotes.length);
-        dispatch({ type: "ADD_TO_HISTORY", payload: currentQuote._id });
-        dispatch({ type: "SET_CURRENT_INDEX", payload: randomIndex });
+        dispatch({ type: QuotesActionType.ADD_TO_HISTORY, payload: currentQuote._id });
+        dispatch({ type: QuotesActionType.SET_CURRENT_INDEX, payload: randomIndex });
         console.log('Dispatched ADD_TO_HISTORY with _id:', currentQuote._id, 'New currentIndex:', randomIndex);
       } else {
         console.error('currentQuote is undefined when trying to add to history. currentIndex:', currentIndex, 'quotes:', quotes);
@@ -49,7 +47,7 @@ const AppContent: React.FC = () => {
 
   const handlePreviousQuoteClick = () => {
     console.log('handlePreviousQuoteClick called. Current history:', state.history);
-    dispatch({ type: "UNDO_HISTORY" });
+    dispatch({ type: QuotesActionType.UNDO_HISTORY });
     console.log('Dispatched UNDO_HISTORY.');
   };
 
@@ -77,11 +75,16 @@ const App: React.FC = () => {
   const { user, isLoading, error } = useAuth();
   const dispatch = useAuthDispatch();
   const navigate = useNavigate();
+  const [displayError, setDisplayError] = useState<string | null>(null);
 
   useEffect(() => {
     if (error) {
-      alert(error);
-      dispatch({ type: "SET_ERROR", payload: null });
+      setDisplayError(error);
+      const timer = setTimeout(() => {
+        setDisplayError(null);
+        dispatch({ type: AuthActionType.SET_ERROR, payload: null });
+      }, 5000); // Display error for 5 seconds
+      return () => clearTimeout(timer);
     }
   }, [error, dispatch]);
 
@@ -112,6 +115,12 @@ const App: React.FC = () => {
           )}
         </div>
       </nav>
+
+      {displayError && (
+        <div className="bg-red-500 text-white p-3 text-center">
+          {displayError}
+        </div>
+      )}
 
       {isLoading && <div className="text-center py-4 text-blue-600">Loading...</div>}
 

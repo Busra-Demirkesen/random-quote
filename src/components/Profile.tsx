@@ -1,9 +1,9 @@
 import React from "react";
-import { useQuotes } from "../context/QuotesContext";
+import { useQuotesState } from "../context/QuotesContext";
 import { Quote } from "../types/Quote";
 
 const Profile: React.FC = () => {
-  const { quotes, likedQuotes, isLoading, error } = useQuotes();
+  const { quotes, likedQuotes, isLoading, error } = useQuotesState();
 
   if (isLoading) {
     return <div className="text-center mt-8">Loading liked quotes...</div>;
@@ -27,8 +27,8 @@ const Profile: React.FC = () => {
               key={quote._id}
               className="border border-gray-300 p-5 rounded-lg bg-white shadow-lg text-center"
             >
-              <p className="text-lg italic mb-2 text-[#948571]">"{quote.q}"</p>
-              <p className="font-bold text-gray-700">- {quote.a}</p>
+              <p className="text-lg italic mb-2 text-[#948571]">"{quote.quoteText}"</p>
+              <p className="font-bold text-gray-700">- {quote.authorName}</p>
             </div>
           ))}
         </div>

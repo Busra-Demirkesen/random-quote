@@ -8,6 +8,16 @@ import {
 } from "react";
 import { Quote } from "../types/Quote";
 
+export enum QuotesActionType {
+  SET_QUOTES = "SET_QUOTES",
+  SET_CURRENT_INDEX = "SET_CURRENT_INDEX",
+  ADD_TO_HISTORY = "ADD_TO_HISTORY",
+  UNDO_HISTORY = "UNDO_HISTORY",
+  TOGGLE_LIKE = "TOGGLE_LIKE",
+  SET_LOADING = "SET_LOADING",
+  SET_ERROR = "SET_ERROR",
+}
+
 type QuotesState = {
   quotes: Quote[];
   currentIndex: number;
@@ -18,29 +28,29 @@ type QuotesState = {
 };
 
 type QuotesAction =
-  | { type: "SET_QUOTES"; payload: Quote[] }
-  | { type: "SET_CURRENT_INDEX"; payload: number }
-  | { type: "ADD_TO_HISTORY"; payload: string }
-  | { type: "UNDO_HISTORY" }
-  | { type: "TOGGLE_LIKE"; payload: string } // Payload is the _id of the quote
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "SET_ERROR"; payload: string | null };
+  | { type: QuotesActionType.SET_QUOTES; payload: Quote[] }
+  | { type: QuotesActionType.SET_CURRENT_INDEX; payload: number }
+  | { type: QuotesActionType.ADD_TO_HISTORY; payload: string }
+  | { type: QuotesActionType.UNDO_HISTORY }
+  | { type: QuotesActionType.TOGGLE_LIKE; payload: string } // Payload is the _id of the quote
+  | { type: QuotesActionType.SET_LOADING; payload: boolean }
+  | { type: QuotesActionType.SET_ERROR; payload: string | null };
 
 const quotesReducer = (
   state: QuotesState,
   action: QuotesAction,
 ): QuotesState => {
   switch (action.type) {
-    case "SET_QUOTES":
+    case QuotesActionType.SET_QUOTES:
       return { ...state, quotes: action.payload, isLoading: false, error: null };
 
-    case "SET_CURRENT_INDEX":
+    case QuotesActionType.SET_CURRENT_INDEX:
       return { ...state, currentIndex: action.payload };
 
-    case "ADD_TO_HISTORY":
+    case QuotesActionType.ADD_TO_HISTORY:
       return { ...state, history: [...state.history, action.payload] };
 
-    case "UNDO_HISTORY":
+    case QuotesActionType.UNDO_HISTORY:
       const newHistory = [...state.history];
       const lastId = newHistory.pop();
       const lastIndex = state.quotes.findIndex(q => q._id === lastId);
@@ -50,7 +60,7 @@ const quotesReducer = (
         history: newHistory,
       };
 
-    case "TOGGLE_LIKE":
+    case QuotesActionType.TOGGLE_LIKE:
       const quoteIdToToggle = action.payload;
       const isLiked = state.likedQuotes.includes(quoteIdToToggle);
       const updatedLikedQuotes = isLiked
@@ -59,9 +69,9 @@ const quotesReducer = (
 
       return { ...state, likedQuotes: updatedLikedQuotes };
 
-    case "SET_LOADING":
+    case QuotesActionType.SET_LOADING:
       return { ...state, isLoading: action.payload };
-    case "SET_ERROR":
+    case QuotesActionType.SET_ERROR:
       return { ...state, error: action.payload, isLoading: false };
 
     default:
@@ -94,7 +104,7 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
   useEffect(() => {
     const initializeQuotes = async () => {
       console.log("Initializing quotes and liked status...");
-      dispatch({ type: "SET_LOADING", payload: true });
+      dispatch({ type: QuotesActionType.SET_LOADING, payload: true });
       try {
         // Load liked quotes from localStorage first
         const storedLikedQuotes = localStorage.getItem("likedQuotes");
@@ -134,12 +144,12 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
         }
 
         console.log("Dispatching SET_QUOTES with payload:", quotesToSet.length, "quotes.", quotesToSet);
-        dispatch({ type: "SET_QUOTES", payload: quotesToSet });
+        dispatch({ type: QuotesActionType.SET_QUOTES, payload: quotesToSet });
       } catch (error: any) {
-        dispatch({ type: "SET_ERROR", payload: error.message });
+        dispatch({ type: QuotesActionType.SET_ERROR, payload: error.message });
         console.error("Initialization error:", error);
       } finally {
-        dispatch({ type: "SET_LOADING", payload: false });
+        dispatch({ type: QuotesActionType.SET_LOADING, payload: false });
         console.log("Initialization complete. Loading state set to false.");
       }
     };
@@ -156,9 +166,9 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
         console.log("Data received from API:", data);
         const mappedQuotes: Quote[] = data.map((item) => ({
           _id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-          q: item.q,
-          a: item.a,
-          h: item.h,
+          quoteText: item.q,
+          authorName: item.a,
+          html: item.h,
           liked: currentLikedQuotes.includes(item.q),
         }));
         console.log("Mapped quotes from API:", mappedQuotes.length, "quotes.", mappedQuotes);
@@ -166,7 +176,7 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
         console.log("Quotes cached to localStorage.");
         return mappedQuotes;
       } catch (error: any) {
-        dispatch({ type: "SET_ERROR", payload: error.message });
+        dispatch({ type: QuotesActionType.SET_ERROR, payload: error.message });
         console.error("Failed to fetch quotes:", error);
         return [];
       }
@@ -190,10 +200,10 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
   );
 };
 
-export const useQuotes = () => {
+export const useQuotesState = () => {
   const context = useContext(QuotesContext);
   if (context === undefined) {
-    throw new Error("useQuotes must be used within a QuotesProvider");
+    throw new Error("useQuotesState must be used within a QuotesProvider");
   }
   return context;
 };

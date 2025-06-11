@@ -8,6 +8,13 @@ import {
   User as FirebaseUser,
 } from "firebase/auth";
 
+export enum AuthActionType {
+  LOGIN = "LOGIN",
+  LOGOUT = "LOGOUT",
+  SET_LOADING = "SET_LOADING",
+  SET_ERROR = "SET_ERROR",
+}
+
 // Adding a comment to force TypeScript re-evaluation
 
 // 1. Define AuthState type
@@ -25,21 +32,21 @@ interface AuthState {
 
 // 2. Define AuthAction types
 type AuthAction =
-  | { type: "LOGIN"; payload: User }
-  | { type: "LOGOUT" }
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "SET_ERROR"; payload: string | null };
+  | { type: AuthActionType.LOGIN; payload: User }
+  | { type: AuthActionType.LOGOUT }
+  | { type: AuthActionType.SET_LOADING; payload: boolean }
+  | { type: AuthActionType.SET_ERROR; payload: string | null };
 
 // 3. Implement authReducer function
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case "LOGIN":
+    case AuthActionType.LOGIN:
       return { ...state, user: action.payload, isLoading: false, error: null };
-    case "LOGOUT":
+    case AuthActionType.LOGOUT:
       return { ...state, user: null, isLoading: false, error: null };
-    case "SET_LOADING":
+    case AuthActionType.SET_LOADING:
       return { ...state, isLoading: action.payload };
-    case "SET_ERROR":
+    case AuthActionType.SET_ERROR:
       return { ...state, error: action.payload, isLoading: false };
     default:
       return state;
@@ -74,9 +81,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           email: firebaseUser.email, // Use email from FirebaseUser
           uid: firebaseUser.uid,
         };
-        dispatch({ type: "LOGIN", payload: user });
+        dispatch({ type: AuthActionType.LOGIN, payload: user });
       } else {
-        dispatch({ type: "LOGOUT" });
+        dispatch({ type: AuthActionType.LOGOUT });
       }
     });
 
