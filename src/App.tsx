@@ -86,6 +86,7 @@ const App: React.FC = () => {
       }, 5000); // Display error for 5 seconds
       return () => clearTimeout(timer);
     }
+    return undefined; // Explicitly return undefined when no error
   }, [error, dispatch]);
 
   useEffect(() => {

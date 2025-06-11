@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useAuthDispatch } from "../../context/AuthContext";
+import { useAuthDispatch, AuthActionType } from "../../context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 
@@ -9,10 +9,10 @@ const Logout: React.FC = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      dispatch({ type: "LOGOUT" });
+      dispatch({ type: AuthActionType.LOGOUT });
       alert("Logged out successfully!"); // User feedback
     } catch (error: any) {
-      dispatch({ type: "SET_ERROR", payload: error.message });
+      dispatch({ type: AuthActionType.SET_ERROR, payload: error.message });
       console.error("Logout error:", error.message);
     }
   };
