@@ -25,8 +25,8 @@ const QuoteCard: React.FC = () => {
 
   return (
     <div className="border border-gray-300 p-5 rounded-lg bg-[#a89882] shadow-lg text-center">
-      <p className="text-lg italic mb-2 text-white">"{quoteObj.quoteText}"</p>
-      <p className="font-bold mb-2 text-white">- {quoteObj.authorName}</p>
+      <p className="text-lg italic mb-2 text-white">"{quoteObj.content}"</p>
+      <p className="font-bold mb-2 text-white">- {quoteObj.author}</p>
       <button
         onClick={handleLikeToggle}
         className={`p-2 rounded-full ${isCurrentQuoteLiked ? 'text-[#7a6b57]' : 'text-white'} hover:text-[#5a4e40] focus:outline-none`}

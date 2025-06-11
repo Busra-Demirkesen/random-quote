@@ -27,8 +27,8 @@ const Profile: React.FC = () => {
               key={quote._id}
               className="border border-gray-300 p-5 rounded-lg bg-white shadow-lg text-center"
             >
-              <p className="text-lg italic mb-2 text-[#948571]">"{quote.quoteText}"</p>
-              <p className="font-bold text-gray-700">- {quote.authorName}</p>
+              <p className="text-lg italic mb-2 text-[#948571]">"{quote.content}"</p>
+              <p className="font-bold text-gray-700">- {quote.author}</p>
             </div>
           ))}
         </div>

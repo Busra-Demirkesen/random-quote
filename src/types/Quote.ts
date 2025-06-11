@@ -1,7 +1,11 @@
 export interface Quote {
   _id: string;
-  quoteText: string;
-  authorName: string;
-  html: string;
+  content: string;
+  author: string;
+  tags: string[];
+  authorSlug: string;
+  length: number;
+  dateAdded: string;
+  dateModified: string;
   liked?: boolean;
 }

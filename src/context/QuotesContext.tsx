@@ -154,27 +154,31 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
       }
     };
 
-    const fetchQuotesFromApi = async (currentLikedQuotes: string[]): Promise<Quote[]> => {
-      console.log("Attempting to fetch quotes from API: /api/quotes");
+    const fetchQuotesFromApi = async (
+      currentLikedQuotes: string[],
+    ): Promise<Quote[]> => {
+      console.log("Attempting to fetch quotes from API: https://api.quotable.io/random");
+      const quotesArray: Quote[] = [];
       try {
-        const response = await fetch("/api/quotes");
-        console.log("API Response status:", response.status);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        for (let i = 0; i < 10; i++) { // Fetch 10 random quotes
+          const response = await fetch("https://api.quotable.io/random");
+          console.log("API Response status for quote", i + 1, ":", response.status);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data: Quote = await response.json(); // API returns a single quote object
+          console.log("Raw data received from API for quote", i + 1, ":", data);
+          quotesArray.push({
+            ...data,
+            liked: currentLikedQuotes.includes(data._id),
+          });
+          console.log("Quote object added to array for quote", i + 1, ":", quotesArray[quotesArray.length - 1]);
         }
-        const data: { q: string, a: string, h: string }[] = await response.json();
-        console.log("Data received from API:", data);
-        const mappedQuotes: Quote[] = data.map((item) => ({
-          _id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-          quoteText: item.q,
-          authorName: item.a,
-          html: item.h,
-          liked: currentLikedQuotes.includes(item.q),
-        }));
-        console.log("Mapped quotes from API:", mappedQuotes.length, "quotes.", mappedQuotes);
-        localStorage.setItem("quotes", JSON.stringify(mappedQuotes)); // Cache fetched quotes
+
+        console.log("Mapped quotes from API:", quotesArray.length, "quotes.", quotesArray);
+        localStorage.setItem("quotes", JSON.stringify(quotesArray)); // Cache fetched quotes
         console.log("Quotes cached to localStorage.");
-        return mappedQuotes;
+        return quotesArray;
       } catch (error: any) {
         dispatch({ type: QuotesActionType.SET_ERROR, payload: error.message });
         console.error("Failed to fetch quotes:", error);
