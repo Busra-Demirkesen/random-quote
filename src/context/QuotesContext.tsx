@@ -8,6 +8,11 @@ import {
 } from "react";
 import { Quote } from "../types/Quote";
 
+// Helper to generate a unique ID for quotes that might lack one from the API
+const generateUniqueId = (): string => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+};
+
 export enum QuotesActionType {
   SET_QUOTES = "SET_QUOTES",
   SET_CURRENT_INDEX = "SET_CURRENT_INDEX",
@@ -16,6 +21,7 @@ export enum QuotesActionType {
   TOGGLE_LIKE = "TOGGLE_LIKE",
   SET_LOADING = "SET_LOADING",
   SET_ERROR = "SET_ERROR",
+  SET_LIKED_QUOTES = "SET_LIKED_QUOTES",
 }
 
 type QuotesState = {
@@ -34,7 +40,8 @@ type QuotesAction =
   | { type: QuotesActionType.UNDO_HISTORY }
   | { type: QuotesActionType.TOGGLE_LIKE; payload: string } // Payload is the _id of the quote
   | { type: QuotesActionType.SET_LOADING; payload: boolean }
-  | { type: QuotesActionType.SET_ERROR; payload: string | null };
+  | { type: QuotesActionType.SET_ERROR; payload: string | null }
+  | { type: QuotesActionType.SET_LIKED_QUOTES; payload: string[] };
 
 const quotesReducer = (
   state: QuotesState,
@@ -74,6 +81,9 @@ const quotesReducer = (
     case QuotesActionType.SET_ERROR:
       return { ...state, error: action.payload, isLoading: false };
 
+    case QuotesActionType.SET_LIKED_QUOTES:
+      return { ...state, likedQuotes: action.payload };
+
     default:
       return state;
   }
@@ -103,7 +113,6 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
   // Effect to load initial quotes and liked status, and fetch if necessary
   useEffect(() => {
     const initializeQuotes = async () => {
-      console.log("Initializing quotes and liked status...");
       dispatch({ type: QuotesActionType.SET_LOADING, payload: true });
       try {
         // Load liked quotes from localStorage first
@@ -111,73 +120,75 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
         let initialLikedQuotes: string[] = [];
         if (storedLikedQuotes) {
           try {
-            initialLikedQuotes = JSON.parse(storedLikedQuotes);
-            console.log("Loaded liked quotes from localStorage:", initialLikedQuotes);
+            initialLikedQuotes = JSON.parse(storedLikedQuotes).filter((id: string | null | undefined) => typeof id === 'string');
           } catch (e) {
             console.error("Failed to parse likedQuotes from localStorage", e);
             localStorage.removeItem("likedQuotes");
           }
         }
 
+        // Dispatch SET_LIKED_QUOTES to update the state with loaded liked quotes
+        dispatch({ type: QuotesActionType.SET_LIKED_QUOTES, payload: initialLikedQuotes });
+
         // Attempt to load quotes from localStorage
         const storedQuotes = localStorage.getItem("quotes");
         let quotesToSet: Quote[] = [];
 
         if (storedQuotes) {
-          console.log("Attempting to load quotes from localStorage...");
           try {
             const parsedQuotes: Quote[] = JSON.parse(storedQuotes);
-            quotesToSet = parsedQuotes.map(q => ({
-              ...q,
-              liked: initialLikedQuotes.includes(q._id)
-            }));
-            console.log("Loaded quotes from localStorage:", quotesToSet.length, "quotes.", quotesToSet);
+            quotesToSet = parsedQuotes.map(q => {
+              const quoteId = (q._id && typeof q._id === 'string') ? q._id : generateUniqueId();
+              return {
+                ...q,
+                _id: quoteId,
+                content: (q as any).content || (q as any).quote || '',
+                liked: initialLikedQuotes.includes(quoteId)
+              };
+            });
           } catch (e) {
             console.error("Failed to parse quotes from localStorage", e);
             localStorage.removeItem("quotes");
-            console.log("Fetching quotes from API due to invalid localStorage data.");
             quotesToSet = await fetchQuotesFromApi(initialLikedQuotes);
           }
         } else {
-          console.log("No quotes found in localStorage, fetching from API.");
           quotesToSet = await fetchQuotesFromApi(initialLikedQuotes);
         }
 
-        console.log("Dispatching SET_QUOTES with payload:", quotesToSet.length, "quotes.", quotesToSet);
         dispatch({ type: QuotesActionType.SET_QUOTES, payload: quotesToSet });
       } catch (error: any) {
         dispatch({ type: QuotesActionType.SET_ERROR, payload: error.message });
         console.error("Initialization error:", error);
       } finally {
         dispatch({ type: QuotesActionType.SET_LOADING, payload: false });
-        console.log("Initialization complete. Loading state set to false.");
       }
     };
 
     const fetchQuotesFromApi = async (
       currentLikedQuotes: string[],
     ): Promise<Quote[]> => {
-      console.log("Attempting to fetch quotes from API: https://api.quotable.io/random");
       const quotesArray: Quote[] = [];
       try {
         for (let i = 0; i < 10; i++) { // Fetch 10 random quotes
           const response = await fetch("https://api.quotable.io/random");
-          console.log("API Response status for quote", i + 1, ":", response.status);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data: Quote = await response.json(); // API returns a single quote object
-          console.log("Raw data received from API for quote", i + 1, ":", data);
+
+          // Ensure _id is a string, generate a unique one if missing or invalid
+          const quoteId = (data._id && typeof data._id === 'string') ? data._id : generateUniqueId();
+
           quotesArray.push({
             ...data,
-            liked: currentLikedQuotes.includes(data._id),
+            _id: quoteId, // Use the validated/generated ID
+            // Ensure content is mapped correctly, checking both 'content' and 'quote' properties
+            content: (data as any).content || (data as any).quote || '', // API'den gelen 'quote' alanını 'content' alanına eşleştiriyorum
+            liked: currentLikedQuotes.includes(quoteId), // Use the validated/generated ID
           });
-          console.log("Quote object added to array for quote", i + 1, ":", quotesArray[quotesArray.length - 1]);
         }
 
-        console.log("Mapped quotes from API:", quotesArray.length, "quotes.", quotesArray);
         localStorage.setItem("quotes", JSON.stringify(quotesArray)); // Cache fetched quotes
-        console.log("Quotes cached to localStorage.");
         return quotesArray;
       } catch (error: any) {
         dispatch({ type: QuotesActionType.SET_ERROR, payload: error.message });
@@ -191,7 +202,6 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
 
   // Effect to persist liked quotes to localStorage whenever they change
   useEffect(() => {
-    console.log("Liked quotes state changed. Persisting to localStorage:", state.likedQuotes);
     localStorage.setItem("likedQuotes", JSON.stringify(state.likedQuotes));
   }, [state.likedQuotes]);
 

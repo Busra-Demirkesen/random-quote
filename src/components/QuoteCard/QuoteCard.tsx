@@ -20,6 +20,8 @@ const QuoteCard: React.FC = () => {
   const isCurrentQuoteLiked = likedQuotes.includes(quoteObj._id);
 
   const handleLikeToggle = () => {
+    console.log("QuoteCard: Toggling like for quoteObj:", quoteObj);
+    console.log("QuoteCard: Toggling like for quoteObj._id:", quoteObj._id);
     dispatch({ type: QuotesActionType.TOGGLE_LIKE, payload: quoteObj._id });
   };
 
