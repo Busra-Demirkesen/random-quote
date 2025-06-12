@@ -78,6 +78,7 @@ const quotesReducer = (
       return { ...state, error: action.payload, isLoading: false };
 
     case QuotesActionType.SET_LIKED_QUOTES:
+      console.log("Reducer: SET_LIKED_QUOTES payload processed:", action.payload);
       return { ...state, likedQuotes: action.payload };
 
     default:
@@ -106,18 +107,23 @@ type QuotesProviderProps = {
 export const QuotesProvider = ({ children }: QuotesProviderProps) => {
   const [state, dispatch] = useReducer(quotesReducer, initialState);
 
+  console.log("QuotesProvider initial render, state:", state);
+
   // Effect to load initial quotes and liked status, and fetch if necessary
   useEffect(() => {
     const initializeQuotes = async () => {
+      console.log("initializeQuotes called.");
       dispatch({ type: QuotesActionType.SET_LOADING, payload: true });
       try {
         // Load liked quotes from localStorage first
         const storedLikedQuotes = localStorage.getItem("likedQuotes");
+        console.log("localStorage storedLikedQuotes raw:", storedLikedQuotes);
         let initialLikedQuotes: string[] = [];
         if (storedLikedQuotes) {
           try {
             // Filter out any null/undefined values that might have been stored due to previous bugs
             initialLikedQuotes = JSON.parse(storedLikedQuotes).filter((id: string | null | undefined) => typeof id === 'string');
+            console.log("initialLikedQuotes after parsing and filtering:", initialLikedQuotes);
           } catch (e) {
             console.error("Failed to parse likedQuotes from localStorage", e);
             localStorage.removeItem("likedQuotes");
@@ -199,6 +205,7 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
 
   // Effect to persist liked quotes to localStorage whenever they change
   useEffect(() => {
+    console.log("Persisting liked quotes to localStorage:", state.likedQuotes);
     localStorage.setItem("likedQuotes", JSON.stringify(state.likedQuotes));
   }, [state.likedQuotes]);
 
