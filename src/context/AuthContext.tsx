@@ -87,18 +87,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     });
 
-    // Clean up subscription
+ 
     return () => unsubscribe();
   }, []);
 
-  // No longer need localStorage persistence for user here, as Firebase manages session
-  // useEffect(() => {
-  //   if (state.user) {
-  //     localStorage.setItem("user", JSON.stringify(state.user));
-  //   } else {
-  //     localStorage.removeItem("user");
-  //   }
-  // }, [state.user]);
+
 
   return (
     <AuthContext.Provider value={state}>
