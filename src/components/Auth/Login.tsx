@@ -19,8 +19,8 @@ const Login: React.FC = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       dispatch({ type: AuthActionType.LOGIN, payload: { id: user.uid, email: user.email, uid: user.uid } });
-      setSuccessMessage("Login successful!"); // Show success message on screen
-      setTimeout(() => setSuccessMessage(null), 3000); // Clear message after 3 seconds
+      setSuccessMessage("Login successful!"); 
+      setTimeout(() => setSuccessMessage(null), 3000); 
     } catch (error: any) {
       dispatch({ type: AuthActionType.SET_ERROR, payload: error.message });
       console.error("Login error:", error.message);

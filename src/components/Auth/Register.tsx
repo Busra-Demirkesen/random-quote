@@ -14,8 +14,8 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setValidationError(null); // Clear previous validation errors
-    dispatch({ type: AuthActionType.SET_ERROR, payload: null }); // Clear previous Firebase errors
+    setValidationError(null);
+    dispatch({ type: AuthActionType.SET_ERROR, payload: null }); 
 
     if (password !== confirmPassword) {
       setValidationError("Passwords do not match");
@@ -27,7 +27,6 @@ const Register: React.FC = () => {
       return;
     }
 
-    // Basic email validation regex
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       setValidationError("Invalid email format");
@@ -40,8 +39,8 @@ const Register: React.FC = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       dispatch({ type: AuthActionType.LOGIN, payload: { id: user.uid, email: user.email, uid: user.uid } });
-      setSuccessMessage("Registration successful!"); // Show success message on screen
-      setTimeout(() => setSuccessMessage(null), 3000); // Clear message after 3 seconds
+      setSuccessMessage("Registration successful!"); 
+      setTimeout(() => setSuccessMessage(null), 3000); 
     } catch (error: any) {
       dispatch({ type: AuthActionType.SET_ERROR, payload: error.message });
       console.error("Registration error:", error.message);

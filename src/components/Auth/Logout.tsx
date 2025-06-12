@@ -10,7 +10,7 @@ const Logout: React.FC = () => {
     try {
       await signOut(auth);
       dispatch({ type: AuthActionType.LOGOUT });
-      alert("Logged out successfully!"); // User feedback
+      alert("Logged out successfully!"); 
     } catch (error: any) {
       dispatch({ type: AuthActionType.SET_ERROR, payload: error.message });
       console.error("Logout error:", error.message);
