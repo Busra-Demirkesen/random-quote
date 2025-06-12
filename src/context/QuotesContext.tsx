@@ -7,11 +7,7 @@ import {
   useContext,
 } from "react";
 import { Quote } from "../types/Quote";
-
-// Helper to generate a unique ID for quotes that might lack one from the API
-const generateUniqueId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-};
+import { generateUniqueId } from "../services/firestoreService";
 
 export enum QuotesActionType {
   SET_QUOTES = "SET_QUOTES",
@@ -120,6 +116,7 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
         let initialLikedQuotes: string[] = [];
         if (storedLikedQuotes) {
           try {
+            // Filter out any null/undefined values that might have been stored due to previous bugs
             initialLikedQuotes = JSON.parse(storedLikedQuotes).filter((id: string | null | undefined) => typeof id === 'string');
           } catch (e) {
             console.error("Failed to parse likedQuotes from localStorage", e);
@@ -138,12 +135,13 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
           try {
             const parsedQuotes: Quote[] = JSON.parse(storedQuotes);
             quotesToSet = parsedQuotes.map(q => {
+              // Ensure _id is a string, generate a unique one if missing or invalid
               const quoteId = (q._id && typeof q._id === 'string') ? q._id : generateUniqueId();
               return {
                 ...q,
                 _id: quoteId,
                 content: (q as any).content || (q as any).quote || '',
-                liked: initialLikedQuotes.includes(quoteId)
+                liked: initialLikedQuotes.includes(quoteId) // Use the validated/generated ID
               };
             });
           } catch (e) {
@@ -182,7 +180,6 @@ export const QuotesProvider = ({ children }: QuotesProviderProps) => {
           quotesArray.push({
             ...data,
             _id: quoteId, // Use the validated/generated ID
-            // Ensure content is mapped correctly, checking both 'content' and 'quote' properties
             content: (data as any).content || (data as any).quote || '', // API'den gelen 'quote' alanını 'content' alanına eşleştiriyorum
             liked: currentLikedQuotes.includes(quoteId), // Use the validated/generated ID
           });

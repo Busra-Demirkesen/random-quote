@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuotesState } from "../context/QuotesContext";
 import { useAuth } from "../context/AuthContext";
 import { Quote } from "../types/Quote";
-import { db } from "../firebase";
-import { collection, addDoc, query, where, getDocs, orderBy, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { addUserQuote, fetchUserQuotes, updateUserQuote, deleteUserQuote } from "../services/firestoreService";
 
 const Profile: React.FC = () => {
   const { quotes, likedQuotes, isLoading, error } = useQuotesState();
@@ -18,7 +17,7 @@ const Profile: React.FC = () => {
   const [editingQuoteId, setEditingQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserQuotes = async () => {
+    const loadUserQuotes = async () => {
       if (!user) {
         setUserQuotes([]);
         setLoadingUserQuotes(false);
@@ -27,19 +26,7 @@ const Profile: React.FC = () => {
 
       setLoadingUserQuotes(true);
       try {
-        const q = query(
-          collection(db, "userQuotes"),
-          where("userId", "==", user.uid),
-          orderBy("createdAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const fetchedQuotes: Quote[] = [];
-        querySnapshot.forEach((doc) => {
-          fetchedQuotes.push({
-            _id: doc.id,
-            ...(doc.data() as Omit<Quote, '_id'>),
-          });
-        });
+        const fetchedQuotes = await fetchUserQuotes(user.uid);
         setUserQuotes(fetchedQuotes);
       } catch (err: any) {
         console.error("Error fetching user quotes:", err);
@@ -49,7 +36,7 @@ const Profile: React.FC = () => {
       }
     };
 
-    fetchUserQuotes();
+    loadUserQuotes();
   }, [user]);
 
   if (isLoading || loadingUserQuotes) {
@@ -77,33 +64,16 @@ const Profile: React.FC = () => {
 
     try {
       if (editingQuoteId) {
-        const quoteRef = doc(db, "userQuotes", editingQuoteId);
-        await updateDoc(quoteRef, {
-          content: newQuoteContent,
-          author: newQuoteAuthor,
-        });
+        await updateUserQuote(editingQuoteId, newQuoteContent, newQuoteAuthor);
         setAddQuoteSuccess('Quote updated successfully!');
         setUserQuotes(prevQuotes => prevQuotes.map(q => 
           q._id === editingQuoteId ? { ...q, content: newQuoteContent, author: newQuoteAuthor } : q
         ));
         setEditingQuoteId(null);
       } else {
-        const docRef = await addDoc(collection(db, "userQuotes"), {
-          content: newQuoteContent,
-          author: newQuoteAuthor,
-          userId: user.uid,
-          createdAt: serverTimestamp(),
-        });
+        const newQuote = await addUserQuote(newQuoteContent, newQuoteAuthor, user.uid);
         setAddQuoteSuccess('Quote added successfully!');
-
-        setUserQuotes(prevQuotes => [{
-          _id: docRef.id,
-          content: newQuoteContent,
-          author: newQuoteAuthor,
-          userId: user.uid,
-          createdAt: new Date().toISOString(),
-          tags: [], authorSlug: '', length: 0, dateAdded: '', dateModified: ''
-        }, ...prevQuotes]);
+        setUserQuotes(prevQuotes => [newQuote, ...prevQuotes]);
       }
       setNewQuoteContent('');
       setNewQuoteAuthor('');
@@ -126,7 +96,7 @@ const Profile: React.FC = () => {
       return;
     }
     try {
-      await deleteDoc(doc(db, "userQuotes", quoteId));
+      await deleteUserQuote(quoteId);
       setUserQuotes(prevQuotes => prevQuotes.filter(q => q._id !== quoteId));
       setAddQuoteSuccess('Quote deleted successfully!');
     } catch (err: any) {
