@@ -46,7 +46,7 @@ export const fetchUserQuotes = async (userId: string): Promise<Quote[]> => {
       length: (docSnap.data() as any).length || 0,
       dateAdded: (docSnap.data() as any).dateAdded || '',
       dateModified: (docSnap.data() as any).dateModified || '',
-      liked: false // Firestore'dan çekilen kullanıcı alıntıları için başlangıçta false
+      liked: false 
     });
   });
   return fetchedQuotes;
@@ -64,6 +64,5 @@ export const deleteUserQuote = async (quoteId: string) => {
   await deleteDoc(doc(db, "userQuotes", quoteId));
 };
 
-// Bu yardımcı fonksiyon, QuotesContext içinde de kullanılabilir,
-// API'den gelen veya localStorage'dan yüklenen alıntılar için ID doğrulamasını sağlar.
+
 export { generateUniqueId }; 

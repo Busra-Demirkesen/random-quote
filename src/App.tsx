@@ -83,10 +83,10 @@ const App: React.FC = () => {
       const timer = setTimeout(() => {
         setDisplayError(null);
         dispatch({ type: AuthActionType.SET_ERROR, payload: null });
-      }, 5000); // Display error for 5 seconds
+      }, 5000); 
       return () => clearTimeout(timer);
     }
-    return undefined; // Explicitly return undefined when no error
+    return undefined; 
   }, [error, dispatch]);
 
   useEffect(() => {
