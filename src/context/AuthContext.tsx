@@ -15,9 +15,7 @@ export enum AuthActionType {
   SET_ERROR = "SET_ERROR",
 }
 
-// Adding a comment to force TypeScript re-evaluation
 
-// 1. Define AuthState type
 interface User {
   id: string;
   email: string | null;
@@ -30,14 +28,14 @@ interface AuthState {
   error: string | null;
 }
 
-// 2. Define AuthAction types
+
 type AuthAction =
   | { type: AuthActionType.LOGIN; payload: User }
   | { type: AuthActionType.LOGOUT }
   | { type: AuthActionType.SET_LOADING; payload: boolean }
   | { type: AuthActionType.SET_ERROR; payload: string | null };
 
-// 3. Implement authReducer function
+
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case AuthActionType.LOGIN:
@@ -53,23 +51,23 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-// 4. Define initial state
+
 const initialState: AuthState = {
   user: null,
-  isLoading: true, // Set to true initially to indicate auth state is being loaded
+  isLoading: true, 
   error: null,
 };
 
-// 5. Create AuthContext and AuthDispatchContext
+
 export const AuthContext = createContext<AuthState | undefined>(undefined);
 export const AuthDispatchContext = createContext<Dispatch<AuthAction> | undefined>(undefined);
 
-// 6. Define AuthProviderProps type
+
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// 7. Implement AuthProvider component
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
@@ -77,8 +75,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const user: User = {
-          id: firebaseUser.uid, // Use uid as id
-          email: firebaseUser.email, // Use email from FirebaseUser
+          id: firebaseUser.uid,
+          email: firebaseUser.email,
           uid: firebaseUser.uid,
         };
         dispatch({ type: AuthActionType.LOGIN, payload: user });
